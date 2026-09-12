@@ -1,0 +1,6 @@
+{
+  "user_configs": { "read": false, "write": false },
+  "config_versions": { "read": false, "write": false },
+  "calculation_records": { "read": false, "write": false },
+  "operation_receipts": { "read": false, "write": false }
+}

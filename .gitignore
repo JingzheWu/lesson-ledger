@@ -6,3 +6,14 @@ test-results/
 .env
 .env.*
 !.env.example
+.npm-cache/
+.pnpm-store/
+.dependency-backup/
+apps/miniprogram/runtime.js
+cloudfunctions/ledger/index.js
+cloudfunctions/ledger/node_modules/
+project.private.config.json
+project.local.json
+.wxml-check.js
+.wxss-check.js
+.browsers/

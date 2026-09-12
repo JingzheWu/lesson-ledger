@@ -1,0 +1,9 @@
+.section-head { margin-top: 22px; }
+.month-picker { min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 23px; }
+.result-card { border-color: #bdd6bd; background: #fafff8; }
+.footnote { margin: 22px 4px; }
+.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 5; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid #e1e8de; }
+.total { font-size: 22px; font-weight: 600; word-break: break-all; }
+.overlay { position: fixed; inset: 0; z-index: 20; background: rgba(21, 39, 28, .35); display: flex; align-items: flex-end; }
+.sheet { width: 100%; background: #fff; border-radius: 24px 24px 0 0; padding: 16px 20px calc(24px + env(safe-area-inset-bottom)); }
+.picker-field { min-height: 54px; padding: 16px 0; display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px solid #e6ece3; }

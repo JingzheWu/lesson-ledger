@@ -1,0 +1,12 @@
+{
+  "name": "lesson-ledger-cloud",
+  "version": "2.0.0",
+  "private": true,
+  "main": "index.js",
+  "engines": {
+    "node": ">=18.15.0"
+  },
+  "dependencies": {
+    "wx-server-sdk": "4.0.2"
+  }
+}

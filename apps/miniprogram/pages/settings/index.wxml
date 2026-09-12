@@ -1,0 +1,30 @@
+<view class="page">
+  <view class="eyebrow">MY RATES</view><view class="title">我的计费表</view><view class="subtitle">个人价格，跨设备同步</view>
+  <view class="notice"><view>{{notice}}</view><button class="link" bindtap="sync" disabled="{{identifying || busy}}">重新同步</button></view>
+  <view wx:if="{{available}}" class="subtitle">配置时间 {{configTime}}</view>
+  <block wx:if="{{!editing}}">
+    <button class="primary" bindtap="edit" disabled="{{!available || identifying}}">编辑计费表</button>
+    <view wx:if="{{!available}}" class="notice warning">当前展示内置默认价格，仅供临时试算。同步个人计费表后可编辑。</view>
+    <billing-table table="{{table}}" rules="{{rules}}" title="{{available ? '当前个人计费表' : '内置默认计费表'}}" />
+  </block>
+  <block wx:else>
+    <view class="notice">正在编辑草稿。仅24个基础单价可修改，0元有效；保存成功后才生效。</view>
+    <view wx:for="{{draftTiers}}" wx:key="id" class="card">
+      <button class="link" data-id="{{item.id}}" bindtap="toggle">{{item.name}} {{expanded[item.id] ? '收起 −' : '展开 ＋'}}</button>
+      <view wx:if="{{expanded[item.id]}}" class="price-grid">
+        <view wx:for="{{item.prices}}" wx:for-item="price" wx:key="group" class="price-cell">
+          <label class="field-label" for="price-{{item.id}}-{{price.group}}">{{price.name}}（元）</label>
+          <input id="price-{{item.id}}-{{price.group}}" type="digit" value="{{price.text}}" maxlength="24" data-tier="{{item.id}}" data-group="{{price.group}}" bindinput="input" disabled="{{busy || unknown || conflict}}" focus="{{focusPrice === item.id + '-' + price.group}}" cursor-spacing="32" />
+          <view wx:if="{{price.error}}" class="error">{{price.error}}</view>
+          <view wx:if="{{price.comparison !== null}}" class="muted">原草稿：{{price.comparison || '未填写'}} 元</view>
+        </view>
+      </view>
+    </view>
+    <view class="notice warning" wx:if="{{message}}">{{message}}</view>
+    <button wx:if="{{conflict}}" bindtap="latest">加载最新配置</button>
+    <button wx:if="{{unknown}}" bindtap="confirmSave" disabled="{{busy}}">查询本次配置保存状态</button>
+    <button class="primary" bindtap="save" loading="{{busy}}" disabled="{{busy || conflict}}">{{unknown ? '重试原配置保存请求' : '保存计费配置'}}</button>
+    <view class="actions"><button bindtap="reset" disabled="{{busy || unknown || conflict}}">恢复默认到草稿</button><button bindtap="cancel" disabled="{{busy || unknown}}">取消编辑</button></view>
+  </block>
+  <view class="subtitle">保存配置只影响后续计算，不会保存课时，也不会改变已保存记录。已有试算将提示重新计算。</view>
+</view>

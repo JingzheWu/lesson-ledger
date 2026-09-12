@@ -1,0 +1,39 @@
+page { background: #f5f7f4; color: #24332a; font-size: 16px; line-height: 1.55; }
+view, text, button, input, picker { box-sizing: border-box; }
+.page { padding: 20px 16px 32px; max-width: 620px; margin: 0 auto; overflow-wrap: anywhere; }
+.eyebrow { font-size: 12px; letter-spacing: 3px; color: #738276; margin-bottom: 6px; }
+.title { font-size: 28px; font-weight: 600; line-height: 1.3; }
+.subtitle { margin-top: 8px; font-size: 14px; color: #748076; }
+.card { background: #fff; border: 1px solid #e4eae2; border-radius: 18px; padding: 18px; margin-top: 16px; }
+.card-title { font-size: 18px; font-weight: 600; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.row > view, .row > text { min-width: 0; }
+.muted { color: #738076; font-size: 14px; }
+.notice { margin-top: 16px; border-radius: 12px; padding: 12px 14px; background: #eaf1e8; font-size: 14px; }
+.warning { color: #8b5721; background: #fff4df; }
+.error { font-size: 14px; color: #a43c2c; margin-top: 8px; }
+.amount { font-size: 40px; font-weight: 650; line-height: 1.2; margin: 16px 0 12px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; word-break: break-all; }
+.amount.small { font-size: 27px; }
+.unit { font-size: 16px; margin-left: 6px; font-weight: 400; }
+.tag { padding: 4px 10px; border-radius: 30px; background: #edf4ec; color: #32754d; font-size: 13px; }
+button { min-height: 44px; display: flex; align-items: center; justify-content: center; white-space: normal; word-break: break-word; line-height: 1.4; font-size: 16px; font-weight: 500; border-radius: 12px; margin: 12px 0 0; padding: 12px 16px; background: #edf2eb; color: #2e6240; }
+button::after { border: 0; }
+button.primary { background: #24754c; color: white; }
+button.danger { background: #fff2ee; color: #a44232; }
+button.link { background: transparent; padding: 10px 0; margin: 0; min-width: 44px; }
+button[disabled] { opacity: .5; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.actions button { flex: 1; min-width: 96px; }
+input { min-height: 48px; height: 48px; min-width: 0; width: 100%; border: 1px solid #dce4da; border-radius: 10px; padding: 8px 12px; font-size: 18px; background: #fafcf9; color: #24332a; }
+.fields { display: flex; gap: 12px; margin-top: 12px; }
+.field { flex: 1; min-width: 0; }
+.field-label { display: block; margin-bottom: 6px; font-size: 14px; color: #68776b; }
+.empty { text-align: center; padding: 30px 12px; }
+.empty-icon { font-size: 32px; color: #32754d; margin-bottom: 10px; }
+.divider { border-top: 1px solid #edf0eb; margin: 16px 0; }
+.line { margin-top: 12px; padding-top: 12px; border-top: 1px solid #edf0eb; }
+.formula { margin-top: 6px; font-variant-numeric: tabular-nums; word-break: break-all; }
+.price-grid { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
+.price-cell { width: calc(50% - 6px); min-width: 0; }
+.price-value { font-size: 20px; margin-top: 4px; word-break: break-all; }
+.space-bottom { padding-bottom: calc(160px + env(safe-area-inset-bottom)); }

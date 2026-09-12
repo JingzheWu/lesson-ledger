@@ -1,0 +1,5 @@
+{
+  "envId": "替换为本次部署的云环境ID",
+  "functionRoot": "cloudfunctions",
+  "functions": [{ "name": "ledger", "runtime": "Nodejs18.15", "handler": "index.main", "timeout": 30, "memorySize": 256, "installDependency": true }]
+}

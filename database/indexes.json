@@ -1,0 +1,47 @@
+{
+  "description": "在微信云开发控制台按下列字段顺序创建复合索引；每个集合默认的 _id 唯一索引必须保留。此文件是部署清单，不会由小程序自动执行。",
+  "indexes": [
+    {
+      "collection": "calculation_records",
+      "name": "owner_saved_id",
+      "unique": false,
+      "fields": [
+        {
+          "field": "ownerId",
+          "direction": "asc"
+        },
+        {
+          "field": "savedAt",
+          "direction": "desc"
+        },
+        {
+          "field": "id",
+          "direction": "desc"
+        }
+      ]
+    },
+    {
+      "collection": "calculation_records",
+      "name": "owner_month_saved_id",
+      "unique": false,
+      "fields": [
+        {
+          "field": "ownerId",
+          "direction": "asc"
+        },
+        {
+          "field": "month",
+          "direction": "asc"
+        },
+        {
+          "field": "savedAt",
+          "direction": "desc"
+        },
+        {
+          "field": "id",
+          "direction": "desc"
+        }
+      ]
+    }
+  ]
+}

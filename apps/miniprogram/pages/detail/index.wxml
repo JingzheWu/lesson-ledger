@@ -1,0 +1,21 @@
+<view class="page">
+  <view class="eyebrow">CALCULATION DETAILS</view><view class="title">每一笔，都清楚</view>
+  <view wx:if="{{loading}}" class="notice">正在读取记录…</view>
+  <view wx:if="{{error}}" class="notice warning">{{error}}<button bindtap="retry">重试读取</button></view>
+  <view wx:if="{{incompatible}}" class="notice warning">这条记录使用了当前小程序无法识别的结构。请更新小程序后查看，原记录仍保留在云端。</view>
+  <block wx:if="{{view}}">
+    <view class="card"><view class="row"><view>{{view.month}} 月度课时费</view><text class="tag">{{state}}</text></view><view class="amount">{{view.amount}}<text class="unit">元</text></view><view>{{view.hours}} 小时 · 折算 {{view.lessons}} 节</view>
+      <view class="line muted">本地计算时间 {{view.calculatedAt}}</view><view wx:if="{{historical}}" class="muted">服务端保存时间 {{view.savedAt}}</view><view class="muted">采用的计费表时间 {{view.configTime}}</view>
+      <view wx:if="{{source}}" class="muted">课时复制自一条已保存记录；本记录独立保存。</view>
+    </view>
+    <view class="card"><view class="card-title">课时输入摘要</view><view wx:if="{{view.zero}}" class="subtitle">本月暂无授课</view><view wx:for="{{view.inputs}}" wx:key="key" class="line"><view>{{item.label}}</view><view class="muted">{{item.hours}} 小时 · {{item.lessons}} 节</view></view></view>
+    <view class="section-title">阶梯计算过程</view>
+    <view wx:for="{{view.tiers}}" wx:key="id" class="card"><view class="card-title">{{item.name}}</view><view class="subtitle">已占 {{item.hours}} 小时 · 小计 {{item.amount}} 元</view><view class="notice">{{item.composition}}</view>
+      <view wx:for="{{item.details}}" wx:for-item="detail" wx:key="key" class="line"><view>{{detail.label}}</view><view class="muted">累计区间 {{detail.interval}}</view><view class="formula">{{detail.formula}}</view></view>
+    </view>
+    <view class="card"><view class="muted">六个阶梯合计</view><view class="amount small">{{view.amount}}<text class="unit">元</text></view></view>
+    <billing-table table="{{view.table}}" rules="{{view.rules}}" title="{{historical ? '本记录使用的计费表' : '本次试算使用的计费表'}}" />
+    <block wx:if="{{historical}}"><button class="primary" bindtap="reuse" disabled="{{acting}}">按当前计费表重新试算</button><button class="danger" bindtap="remove" disabled="{{acting}}" loading="{{acting}}">删除这条记录</button></block>
+    <view class="subtitle">历史按保存时的明细和计费表展示。课时费仅供核对，不代表工资已发放。</view>
+  </block>
+</view>

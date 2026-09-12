@@ -1,0 +1,52 @@
+<view class="page space-bottom">
+  <view class="eyebrow">LESSON LEDGER</view>
+  <view class="title">每一课，都有数</view>
+  <view class="subtitle">月度课时费 · 先核对，再保存</view>
+  <view class="notice {{defaultPrices ? 'warning' : ''}}">
+    <view>{{notice}}</view>
+    <view class="actions" wx:if="{{pendingConfig}}"><button bindtap="applyNew" disabled="{{busy}}">应用并待重算</button><button bindtap="keepOld">继续本次旧表</button></view>
+    <button wx:else class="link" bindtap="sync" disabled="{{identifying}}">重新同步</button>
+  </view>
+  <view class="card">
+    <view class="muted">结算月份</view>
+    <picker mode="date" fields="month" value="{{month}}" start="1900-01" end="9999-12" bindchange="changeMonth" disabled="{{busy}}"><view class="month-picker">{{month || '正在确认身份'}} <text class="muted">更改 ›</text></view></picker>
+  </view>
+  <view class="row section-head"><view class="card-title">本月课时 <text class="muted">{{rows.length}} 组</text></view><button class="link" bindtap="clear" disabled="{{busy || !rows.length}}">清空</button></view>
+  <view wx:if="{{!rows.length}}" class="card empty"><view class="empty-icon">＋</view><view>从一组课时开始</view><view class="subtitle">选择年级和班型，填写节数或小时。</view><view class="subtitle">没有授课也可计算并保存 0 元记录。</view></view>
+  <view wx:for="{{rows}}" wx:key="key" class="card" id="entry-{{item.key}}">
+    <view class="row"><view class="card-title">{{item.label}}</view><button class="link" data-key="{{item.key}}" bindtap="remove" disabled="{{busy}}" aria-label="删除{{item.label}}">删除</button></view>
+    <view class="fields">
+      <view class="field"><label class="field-label" for="lessons-{{item.key}}">节数</label><input id="lessons-{{item.key}}" type="digit" value="{{item.lessonsText}}" placeholder="0" maxlength="24" data-key="{{item.key}}" data-unit="lessons" bindinput="input" bindblur="blur" disabled="{{busy}}" focus="{{focusKey === item.key}}" cursor-spacing="36" adjust-position="{{true}}" /></view>
+      <view class="field"><label class="field-label" for="hours-{{item.key}}">小时</label><input id="hours-{{item.key}}" type="digit" value="{{item.hoursText}}" placeholder="0" maxlength="24" data-key="{{item.key}}" data-unit="hours" bindinput="input" bindblur="blur" disabled="{{busy}}" cursor-spacing="36" adjust-position="{{true}}" /></view>
+    </view>
+    <view class="error" wx:if="{{item.error}}">{{item.error}}</view>
+  </view>
+  <button bindtap="openSheet" disabled="{{busy}}">＋ 添加课时</button>
+  <view wx:if="{{result}}" class="card result-card" id="result">
+    <view class="row"><view>{{result.month}} 月度课时费</view><text class="tag">{{resultLabel}}</text></view>
+    <view class="amount">{{result.amount}}<text class="unit">元</text></view>
+    <view class="muted">{{result.hours}} 小时 · 折算 {{result.lessons}} 节</view>
+    <view class="notice warning" wx:if="{{resultState === 'stale'}}">输入或计费表已变化，上方为上次结果，请重新计算。</view>
+    <view class="muted" wx:if="{{result.zero}}">本月暂无授课</view>
+    <button bindtap="detail">查看计算明细</button>
+    <button class="primary" wx:if="{{resultState !== 'saved'}}" disabled="{{!canSave}}" loading="{{resultState === 'saving'}}" bindtap="save">{{resultState === 'unknown' || resultState === 'failed' ? '重试保存到云端' : '保存到云端'}}</button>
+    <button wx:if="{{resultState === 'unknown'}}" bindtap="confirmSave">查询本次保存状态</button>
+    <block wx:if="{{resultState === 'saved'}}"><view class="subtitle">保存于 {{savedTime}}</view><button class="primary" bindtap="record">查看记录</button></block>
+  </view>
+  <view class="subtitle footnote">计算不会上传课时或结果。未保存试算关闭后可能丢失。课时费仅供核对，不代表工资已发放。</view>
+</view>
+<view class="bottom-bar" wx:if="{{!keyboardOpen}}"><view class="row"><view><text class="total">{{totalHours}}</text> 小时</view><view class="muted">折算 {{totalLessons}} 节</view></view><button class="primary" bindtap="calculate" disabled="{{busy}}">{{result ? '重新计算课时费' : '计算课时费'}}</button></view>
+<view class="overlay" wx:if="{{sheet}}" bindtap="closeSheet" catchtouchmove="stop" style="bottom: {{keyboardHeight}}px">
+  <scroll-view scroll-y class="sheet" style="height: {{sheetHeight}}px" catchtap="stop"><view class="row"><view class="card-title">添加课时</view><button class="link" bindtap="closeSheet">关闭</button></view>
+    <view class="subtitle">已有组合会定位到原卡片，直接编辑。</view>
+    <picker range="{{grades}}" value="{{gradeIndex}}" bindchange="chooseGrade"><view class="picker-field">年级 <text>{{grades[gradeIndex]}}　›</text></view></picker>
+    <picker range="{{classes}}" value="{{classIndex}}" bindchange="chooseClass"><view class="picker-field">班型 <text>{{classes[classIndex]}}　›</text></view></picker>
+    <view wx:if="{{sheetDuplicate}}" class="notice">这组课时已存在，将定位原卡片进行编辑。</view>
+    <view wx:else class="fields">
+      <view class="field"><view class="field-label">节数</view><input type="digit" aria-label="新增课时节数" value="{{sheetLessons}}" placeholder="0" maxlength="24" data-unit="lessons" bindinput="sheetInput" adjust-position="{{false}}" /></view>
+      <view class="field"><view class="field-label">小时</view><input type="digit" aria-label="新增课时小时数" value="{{sheetHours}}" placeholder="0" maxlength="24" data-unit="hours" bindinput="sheetInput" adjust-position="{{false}}" /></view>
+    </view>
+    <view wx:if="{{sheetError && !sheetDuplicate}}" class="error">{{sheetError}}</view>
+    <button class="primary" bindtap="add">{{sheetDuplicate ? '定位已有课时' : '添加这组课时'}}</button>
+  </scroll-view>
+</view>
