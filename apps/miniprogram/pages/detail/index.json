@@ -1,1 +1,1 @@
-{ "navigationBarTitleText": "计算明细", "usingComponents": { "billing-table": "/components/billing-table/index" } }
+{ "navigationBarTitleText": "计算明细", "navigationStyle": "custom", "usingComponents": { "billing-table": "/components/billing-table/index" } }

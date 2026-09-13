@@ -1,6 +1,6 @@
 <view class="page">
   <view class="eyebrow">MY RATES</view><view class="title">我的计费表</view><view class="subtitle">个人价格，跨设备同步</view>
-  <view class="notice"><view>{{notice}}</view><button class="link" bindtap="sync" disabled="{{identifying || busy}}">重新同步</button></view>
+  <view class="notice sync-notice"><view class="notice-row"><view class="notice-message">{{notice}}</view><button class="link sync-action" bindtap="sync" disabled="{{identifying || busy}}">重新同步</button></view></view>
   <view wx:if="{{available}}" class="subtitle">配置时间 {{configTime}}</view>
   <block wx:if="{{!editing}}">
     <button class="primary" bindtap="edit" disabled="{{!available || identifying}}">编辑计费表</button>
@@ -8,13 +8,18 @@
     <billing-table table="{{table}}" rules="{{rules}}" title="{{available ? '当前个人计费表' : '内置默认计费表'}}" />
   </block>
   <block wx:else>
-    <view class="notice">正在编辑草稿。仅24个基础单价可修改，0元有效；保存成功后才生效。</view>
+    <view class="notice edit-guide">
+      <view class="edit-guide-title">正在编辑草稿</view>
+      <view class="edit-guide-row"><view class="edit-guide-label">单价口径</view><view class="edit-guide-value">一对一基础单价，元 / 小时</view></view>
+      <view class="edit-guide-row"><view class="edit-guide-label">可改内容</view><view class="edit-guide-value">24 个单价，支持填写 0 元</view></view>
+      <view class="edit-guide-row"><view class="edit-guide-label">生效时间</view><view class="edit-guide-value">保存成功后生效</view></view>
+    </view>
     <view wx:for="{{draftTiers}}" wx:key="id" class="card">
       <button class="link" data-id="{{item.id}}" bindtap="toggle">{{item.name}} {{expanded[item.id] ? '收起 −' : '展开 ＋'}}</button>
       <view wx:if="{{expanded[item.id]}}" class="price-grid">
         <view wx:for="{{item.prices}}" wx:for-item="price" wx:key="group" class="price-cell">
-          <label class="field-label" for="price-{{item.id}}-{{price.group}}">{{price.name}}（元）</label>
-          <input id="price-{{item.id}}-{{price.group}}" type="digit" value="{{price.text}}" maxlength="24" data-tier="{{item.id}}" data-group="{{price.group}}" bindinput="input" disabled="{{busy || unknown || conflict}}" focus="{{focusPrice === item.id + '-' + price.group}}" cursor-spacing="32" />
+          <label class="field-label" for="price-{{item.id}}-{{price.group}}">{{price.name}}</label>
+          <input id="price-{{item.id}}-{{price.group}}" aria-label="{{price.name}}基础单价，元每小时" type="digit" value="{{price.text}}" maxlength="24" data-tier="{{item.id}}" data-group="{{price.group}}" bindinput="input" disabled="{{busy || unknown || conflict}}" focus="{{focusPrice === item.id + '-' + price.group}}" cursor-spacing="32" />
           <view wx:if="{{price.error}}" class="error">{{price.error}}</view>
           <view wx:if="{{price.comparison !== null}}" class="muted">原草稿：{{price.comparison || '未填写'}} 元</view>
         </view>

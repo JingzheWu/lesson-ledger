@@ -1,1 +1,6 @@
 .price-cell { margin-bottom: 10px; }
+.price-cell .field-label { min-height: 3.1em; line-height: 1.55; }
+.edit-guide-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+.edit-guide-row { display: flex; align-items: flex-start; gap: 12px; margin-top: 8px; }
+.edit-guide-label { flex: 0 0 4em; color: #68776b; }
+.edit-guide-value { flex: 1; min-width: 0; }

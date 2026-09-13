@@ -1,7 +1,7 @@
-import { createHash } from 'node:crypto'
+import { createHash, randomBytes } from 'node:crypto'
 import { calculate, defaultConfig, isConfig, RULE_VERSION, validMonth } from '../packages/core/domain'
-import { canonical, LedgerError, rulesSnapshot } from '../packages/core/contracts'
-import type { CloudConfig, Cursor, SavedRecord, SaveConfigRequest, SaveRecordRequest } from '../packages/core/contracts'
+import { canonical, clone, isReadableRecord, LedgerError, rulesSnapshot } from '../packages/core/contracts'
+import type { CloudConfig, CreateShareRequest, Cursor, SavedRecord, SaveConfigRequest, SaveRecordRequest, SharedCalculation, ShareLink } from '../packages/core/contracts'
 import type { Documents, Repository } from './repository'
 
 interface Owned { ownerId: string }
@@ -9,6 +9,8 @@ interface Pointer extends Owned { revision: number; versionId: string; createdAt
 interface Version extends Owned, CloudConfig {}
 interface Receipt extends Owned { fingerprint: string; kind: 'config' | 'record'; targetId: string; deleted?: boolean; config?: CloudConfig }
 type RecordDoc = SavedRecord & Owned & { month: string; totalFeeCents: number; totalHoursHundredths: number; totalLessons: string; configUpdatedAt: string }
+interface ShareDoc extends Owned { snapshot: SharedCalculation; recordId?: string; revoked: boolean }
+interface ShareReceipt extends Owned { fingerprint: string; kind: 'share'; token: string }
 const fail = (code: string, message: string): never => { throw new LedgerError(code, message) }
 const hash = (value: string) => createHash('sha256').update(value).digest('hex')
 export const scopedId = (owner: string, kind: string, key: string) => hash(canonical([owner, kind, key]))
@@ -47,6 +49,28 @@ export class LedgerService {
       case 'getConfig': object(p, []); return this.getConfig(owner)
       case 'saveConfig': return this.saveConfig(owner, p)
       case 'saveRecord': return this.saveRecord(owner, p)
+      case 'createShare': return this.createShare(owner, p)
+      case 'getShare': {
+        object(p, ['token']); this.shareToken(p.token)
+        const share = await this.repo.get<ShareDoc>('shared_calculations', hash(p.token))
+        if (!share || share.revoked) return inaccessible()
+        if (share.recordId) {
+          const record = await this.repo.get<RecordDoc>('calculation_records', share.recordId)
+          if (!record || record.ownerId !== share.ownerId) return inaccessible()
+        }
+        // Possession of the unguessable link grants this snapshot only, never
+        // access to the owner's record ID, config versions, or private history.
+        return share.snapshot
+      }
+      case 'revokeShare': {
+        object(p, ['token']); this.shareToken(p.token)
+        const key = hash(p.token)
+        return this.repo.transaction(async tx => {
+          const share = own(await tx.get<ShareDoc>('shared_calculations', key), owner)
+          await tx.put('shared_calculations', key, { ...share, revoked: true })
+          return { revoked: true }
+        })
+      }
       case 'saveStatus': {
         object(p, ['requestId']); id(p.requestId)
         return this.repo.transaction(async tx => {
@@ -97,6 +121,60 @@ export class LedgerService {
       }
       default: return fail('INVALID', '不支持的操作，请更新小程序')
     }
+  }
+
+  private shareToken(value: unknown): asserts value is string {
+    if (typeof value !== 'string' || !/^[a-f0-9]{64}$/.test(value)) inaccessible()
+  }
+
+  private async createShare(owner: string, payload: unknown): Promise<ShareLink> {
+    object(payload, ['requestId', 'recordId', 'calculation']); id(payload.requestId)
+    if ((payload.recordId === undefined) === (payload.calculation === undefined)) fail('INVALID', '请选择一份计算明细')
+    if (payload.recordId !== undefined) id(payload.recordId)
+    const p = payload as unknown as CreateShareRequest
+    if (p.calculation !== undefined) {
+      object(p.calculation, ['versionId', 'ruleVersion', 'input', 'calculatedAt', 'expectedResult'])
+      if (p.calculation.versionId !== null) id(p.calculation.versionId)
+      object(p.calculation.input, ['month', 'entries'])
+      if (!Array.isArray(p.calculation.input.entries) || p.calculation.input.entries.length > 36) fail('INVALID', '课时组合最多36项')
+      p.calculation.input.entries.forEach(e => object(e, ['gradeId', 'classSize', 'hoursHundredths']))
+      if (p.calculation.ruleVersion !== RULE_VERSION) fail('VERSION', '请更新小程序后重新计算')
+      if (typeof p.calculation.calculatedAt !== 'string' || p.calculation.calculatedAt.length > 32 || !Number.isFinite(Date.parse(p.calculation.calculatedAt))) fail('INVALID', '计算时间无效')
+    }
+    const receiptId = scopedId(owner, 'share', p.requestId), fingerprint = hash(canonical(p))
+    // Generate on the server, outside the transaction retry callback.
+    const token = randomBytes(32).toString('hex')
+    return this.repo.transaction(async tx => {
+      const receipt = await tx.get<ShareReceipt>('operation_receipts', receiptId)
+      if (receipt) {
+        own(receipt, owner)
+        if (receipt.fingerprint !== fingerprint) fail('REQUEST_REUSED', '同一请求不能分享不同内容')
+        const previous = own(await tx.get<ShareDoc>('shared_calculations', hash(receipt.token)), owner)
+        if (previous.revoked) fail('DELETED', '此分享已停止，请重新创建分享')
+        if (previous.recordId) own(await tx.get<RecordDoc>('calculation_records', previous.recordId), owner)
+        return { token: receipt.token }
+      }
+      let snapshot: SharedCalculation
+      if (p.recordId) {
+        const record = own(await tx.get<RecordDoc>('calculation_records', p.recordId), owner)
+        if (!isReadableRecord(record)) fail('VERSION', '请更新小程序后分享此记录')
+        snapshot = { schemaVersion: 1, ruleVersion: record.ruleVersion, result: record.result, rules: record.rules, savedAt: record.savedAt, sharedAt: this.now() }
+      } else {
+        const calculation = p.calculation!
+        const version = calculation.versionId ? own(await tx.get<Version>('config_versions', calculation.versionId), owner) : null
+        const config = version?.config ?? defaultConfig()
+        let result
+        try { result = calculate(calculation.input, config, calculation.calculatedAt) }
+        catch (e) { return fail('INVALID', e instanceof Error ? e.message : '课时输入无效') }
+        if (canonical(result) !== canonical(calculation.expectedResult)) fail('MISMATCH', '计算结果不一致，请重新计算后分享')
+        snapshot = { schemaVersion: 1, ruleVersion: RULE_VERSION, result, rules: version?.rules ?? rulesSnapshot(), sharedAt: this.now() }
+      }
+      snapshot = clone(snapshot)
+      snapshot.result.config.configRevision = 'shared-snapshot'
+      await tx.put('shared_calculations', hash(token), { ownerId: owner, snapshot, revoked: false, ...(p.recordId ? { recordId: p.recordId } : {}) })
+      await tx.put('operation_receipts', receiptId, { ownerId: owner, kind: 'share', fingerprint, token })
+      return { token }
+    })
   }
 
   private async readConfig(tx: Documents, owner: string, pointer: Pointer): Promise<CloudConfig> {

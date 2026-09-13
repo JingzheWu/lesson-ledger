@@ -61,5 +61,12 @@ App({
       }
     })
   },
-  onShow() { this.ready = this.session.identify() },
+  onShow() {
+    if (this.session.identityReady && !this.session.identifying) {
+      // Keep the verified in-memory session usable when returning from sharing
+      // or another app. Cloud calls still validate the account's session key.
+      this.ready = Promise.resolve()
+      this.session.refreshConfig()
+    } else this.ready = this.session.identify()
+  },
 })

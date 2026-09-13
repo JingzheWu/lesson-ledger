@@ -11,6 +11,8 @@
     "enhance": true,
     "postcss": true,
     "minified": true,
+    "ignoreDevUnusedFiles": false,
+    "ignoreUploadUnusedFiles": false,
     "urlCheck": true,
     "compileWorklet": false,
     "uglifyFileName": false,
@@ -31,7 +33,12 @@
   },
   "packOptions": {
     "ignore": [],
-    "include": []
+    "include": [
+      {
+        "type": "folder",
+        "value": "components/billing-table"
+      }
+    ]
   },
   "simulatorPluginLibVersion": {},
   "editorSetting": {}

@@ -1,6 +1,6 @@
 import type { Cursor, RecordSummary } from '../packages/core/contracts'
 
-export type Collection = 'user_configs' | 'config_versions' | 'calculation_records' | 'operation_receipts'
+export type Collection = 'user_configs' | 'config_versions' | 'calculation_records' | 'operation_receipts' | 'shared_calculations'
 export interface Documents {
   get<T>(collection: Collection, id: string): Promise<T | null>
   put<T extends object>(collection: Collection, id: string, value: T): Promise<void>

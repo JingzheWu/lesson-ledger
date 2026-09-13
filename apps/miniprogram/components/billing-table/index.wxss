@@ -8,3 +8,4 @@
 .price { font-size: 20px; word-break: break-all; }
 .rules { margin-top: 16px; padding: 16px; background: #eaf1e8; border-radius: 12px; color: #516957; font-size: 14px; }
 .rules view { margin-bottom: 8px; }
+.export-node { word-break: break-all; }

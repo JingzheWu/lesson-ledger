@@ -26,6 +26,12 @@ corepack pnpm build:wechat  # 类型检查 + 小程序与云函数构建
 corepack pnpm check:wechat  # 使用本机微信开发者工具编译 WXML / WXSS
 ```
 
+## 小程序明细长图与分享
+
+计算结果和历史记录的明细页均可保存完整长图到相册，也可选择分享图片或只读小程序链接。链接接收者只能查看本次快照，左上角首页图标返回自己的计算页；主动分享试算不会增加历史记录。
+
+本功能使用现有微信云开发，无需自建服务器。已有环境需新增 `shared_calculations` 集合（仅管理端可读写），执行 `pnpm build:wechat` 并重新部署 `ledger`，然后更新小程序。相册声明、操作步骤和真机检查见[长图与分享部署说明](docs/wechat-deployment.md#长图保存与只读分享升级)。
+
 ## 网页启动
 
 需要 Node.js 22.12+ 与 pnpm 10。

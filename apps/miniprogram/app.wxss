@@ -20,7 +20,20 @@ button { min-height: 44px; display: flex; align-items: center; justify-content: 
 button::after { border: 0; }
 button.primary { background: #24754c; color: white; }
 button.danger { background: #fff2ee; color: #a44232; }
-button.link { background: transparent; padding: 10px 0; margin: 0; min-width: 44px; }
+button.link { width: auto; flex-shrink: 0; background: transparent; padding: 10px 0; margin: 0; min-width: 44px; }
+button.link.button-hover:not([disabled]) { background: rgba(36, 117, 76, .08); box-shadow: 0 2px 8px rgba(36, 51, 42, .16); }
+button.full-width { width: 100%; font-size: 15px; }
+.sync-notice { padding-top: 6px; padding-bottom: 6px; }
+.notice-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.notice-message { flex: 1; min-width: 0; }
+button.sync-action { font-size: 13px; font-weight: 400; white-space: nowrap; }
+.icon { display: inline-block; position: relative; width: 24px; height: 24px; flex-shrink: 0; vertical-align: middle; }
+.icon-chevron::before { content: ''; position: absolute; width: 10px; height: 10px; top: 6px; left: 4px; border-top: 2px solid currentColor; border-right: 2px solid currentColor; transform: rotate(45deg); }
+.icon-down { transform: rotate(90deg); }
+.icon-plus::before, .icon-plus::after { content: ''; position: absolute; background: currentColor; border-radius: 1px; }
+.icon-plus::before { width: 16px; height: 2px; left: 4px; top: 11px; }
+.icon-plus::after { width: 2px; height: 16px; left: 11px; top: 4px; }
+button .icon { margin: 0 6px; }
 button[disabled] { opacity: .5; }
 .actions { display: flex; flex-wrap: wrap; gap: 10px; }
 .actions button { flex: 1; min-width: 96px; }

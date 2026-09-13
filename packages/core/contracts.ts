@@ -41,6 +41,16 @@ export interface SavedRecord {
   id: string; schemaVersion: 1; requestId: string; versionId: string; ruleVersion: string
   result: Result; rules: Rules; savedAt: number; sourceRecordId?: string
 }
+export interface SharedCalculation {
+  schemaVersion: 1; ruleVersion: string; result: Result; rules: Rules
+  sharedAt: number; savedAt?: number
+}
+export interface ShareLink { token: string }
+export interface CreateShareRequest {
+  requestId: string
+  recordId?: string
+  calculation?: { versionId: string | null; ruleVersion: string; input: Input; calculatedAt: string; expectedResult: Result }
+}
 export interface RecordSummary {
   id: string; schemaVersion: number; month: string; totalFeeCents: number
   totalHoursHundredths: number; totalLessons: string; savedAt: number; configUpdatedAt: string
@@ -75,4 +85,10 @@ export function isReadableRecord(value: unknown): value is SavedRecord {
     Array.isArray(result.tiers) && result.tiers.length === 6 && result.tiers.every(t =>
       nonnegative(t.feeCents) && nonnegative(t.hoursHundredths) && Array.isArray(t.details) &&
       t.details.every(d => nonnegative(d.feeCents) && nonnegative(d.hoursHundredths) && nonnegative(d.rateCents)))
+}
+export function isReadableShare(value: unknown): value is SharedCalculation {
+  const share = value as SharedCalculation | null
+  return !!share && Number.isSafeInteger(share.sharedAt) && share.sharedAt >= 0 &&
+    (share.savedAt === undefined || (Number.isSafeInteger(share.savedAt) && share.savedAt >= 0)) &&
+    isReadableRecord({ ...share, id: 'shared', savedAt: share.savedAt ?? share.sharedAt })
 }

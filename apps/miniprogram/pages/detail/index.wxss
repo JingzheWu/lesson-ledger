@@ -1,1 +1,14 @@
 .section-title { font-size: 21px; font-weight: 600; margin: 24px 2px 0; }
+.detail-nav { position: fixed; z-index: 10; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 8px; padding-left: 12px; padding-bottom: 10px; background: #f5f7f4; }
+button.nav-button { width: 44px; min-height: 32px; padding: 0; }
+.nav-title { font-size: 16px; font-weight: 600; white-space: nowrap; }
+.icon-back { transform: rotate(180deg); }
+.icon-home::before { content: ''; position: absolute; width: 14px; height: 14px; top: 4px; left: 5px; border-top: 2px solid currentColor; border-left: 2px solid currentColor; transform: rotate(45deg); }
+.icon-home::after { content: ''; position: absolute; width: 14px; height: 12px; top: 10px; left: 5px; border: 2px solid currentColor; border-top: 0; border-radius: 0 0 2px 2px; }
+.detail-actions button { font-size: 14px; }
+.detail-toolbar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; padding: 0 16px calc(12px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid #e1e8de; }
+.export-node { word-break: break-all; }
+.share-overlay { position: fixed; inset: 0; z-index: 30; display: flex; align-items: flex-end; background: rgba(21, 39, 28, .35); }
+.share-sheet { width: 100%; padding: 16px 20px calc(24px + env(safe-area-inset-bottom)); border-radius: 24px 24px 0 0; background: #fff; }
+button.revoke-share { font-size: 13px; color: #738076; }
+.export-canvas { position: fixed; left: -10000px; top: 0; pointer-events: none; }

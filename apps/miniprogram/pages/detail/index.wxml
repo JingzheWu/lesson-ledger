@@ -1,21 +1,44 @@
-<view class="page">
-  <view class="eyebrow">CALCULATION DETAILS</view><view class="title">每一笔，都清楚</view>
+<view class="detail-nav" style="padding-top: {{navTop}}px; padding-right: {{navRight}}px; height: {{navTotal}}px">
+  <button class="link nav-button" style="height: {{navHeight}}px" bindtap="navigateBack" aria-label="{{homeNavigation ? '返回首页' : '返回上一页'}}"><view class="icon {{homeNavigation ? 'icon-home' : 'icon-chevron icon-back'}}" aria-hidden="true"></view></button>
+  <view class="nav-title">计算明细</view>
+</view>
+<view style="height: {{navTotal}}px"></view>
+<view class="page space-bottom">
   <view wx:if="{{loading}}" class="notice">正在读取记录…</view>
   <view wx:if="{{error}}" class="notice warning">{{error}}<button bindtap="retry">重试读取</button></view>
   <view wx:if="{{incompatible}}" class="notice warning">这条记录使用了当前小程序无法识别的结构。请更新小程序后查看，原记录仍保留在云端。</view>
-  <block wx:if="{{view}}">
-    <view class="card"><view class="row"><view>{{view.month}} 月度课时费</view><text class="tag">{{state}}</text></view><view class="amount">{{view.amount}}<text class="unit">元</text></view><view>{{view.hours}} 小时 · 折算 {{view.lessons}} 节</view>
-      <view class="line muted">本地计算时间 {{view.calculatedAt}}</view><view wx:if="{{historical}}" class="muted">服务端保存时间 {{view.savedAt}}</view><view class="muted">采用的计费表时间 {{view.configTime}}</view>
-      <view wx:if="{{source}}" class="muted">课时复制自一条已保存记录；本记录独立保存。</view>
+  <view wx:if="{{view}}" id="detail-report">
+    <view class="eyebrow export-node" data-export-text="CALCULATION DETAILS">CALCULATION DETAILS</view><view class="title export-node" data-export-text="每一笔，都清楚">每一笔，都清楚</view>
+    <view wx:if="{{shared}}" class="notice export-node" data-export-text="这是一份只读分享明细，展示分享时的课时和计费表。">这是一份只读分享明细，展示分享时的课时和计费表。</view>
+    <view class="card export-node"><view class="row"><view class="export-node" data-export-text="{{view.month}} 月度课时费">{{view.month}} 月度课时费</view><view class="tag export-node" data-export-text="{{state}}">{{state}}</view></view><view class="amount"><text class="export-node" data-export-text="{{view.amount}}">{{view.amount}}</text><text class="unit export-node" data-export-text="元">元</text></view><view class="export-node" data-export-text="{{view.hours}} 小时 · 折算 {{view.lessons}} 节">{{view.hours}} 小时 · 折算 {{view.lessons}} 节</view>
+      <view class="line muted export-node" data-export-text="本地计算时间 {{view.calculatedAt}}">本地计算时间 {{view.calculatedAt}}</view><view wx:if="{{historical}}" class="muted export-node" data-export-text="服务端保存时间 {{view.savedAt}}">服务端保存时间 {{view.savedAt}}</view><view class="muted export-node" data-export-text="采用的计费表时间 {{view.configTime}}">采用的计费表时间 {{view.configTime}}</view>
+      <view wx:if="{{source}}" class="muted export-node" data-export-text="课时复制自一条已保存记录；本记录独立保存。">课时复制自一条已保存记录；本记录独立保存。</view>
     </view>
-    <view class="card"><view class="card-title">课时输入摘要</view><view wx:if="{{view.zero}}" class="subtitle">本月暂无授课</view><view wx:for="{{view.inputs}}" wx:key="key" class="line"><view>{{item.label}}</view><view class="muted">{{item.hours}} 小时 · {{item.lessons}} 节</view></view></view>
-    <view class="section-title">阶梯计算过程</view>
-    <view wx:for="{{view.tiers}}" wx:key="id" class="card"><view class="card-title">{{item.name}}</view><view class="subtitle">已占 {{item.hours}} 小时 · 小计 {{item.amount}} 元</view><view class="notice">{{item.composition}}</view>
-      <view wx:for="{{item.details}}" wx:for-item="detail" wx:key="key" class="line"><view>{{detail.label}}</view><view class="muted">累计区间 {{detail.interval}}</view><view class="formula">{{detail.formula}}</view></view>
+    <view class="card export-node"><view class="card-title export-node" data-export-text="课时输入摘要">课时输入摘要</view><view wx:if="{{view.zero}}" class="subtitle export-node" data-export-text="本月暂无授课">本月暂无授课</view><view wx:for="{{view.inputs}}" wx:key="key" class="line export-node"><view class="export-node" data-export-text="{{item.label}}">{{item.label}}</view><view class="muted export-node" data-export-text="{{item.hours}} 小时 · {{item.lessons}} 节">{{item.hours}} 小时 · {{item.lessons}} 节</view></view></view>
+    <view class="section-title export-node" data-export-text="阶梯计算过程">阶梯计算过程</view>
+    <view wx:for="{{view.tiers}}" wx:key="id" class="card export-node"><view class="card-title export-node" data-export-text="{{item.name}}">{{item.name}}</view><view class="subtitle export-node" data-export-text="已占 {{item.hours}} 小时 · 小计 {{item.amount}} 元">已占 {{item.hours}} 小时 · 小计 {{item.amount}} 元</view>
+      <view wx:if="{{!item.details.length}}" class="subtitle export-node" data-export-text="{{item.emptyText}}">{{item.emptyText}}</view>
+      <view wx:for="{{item.details}}" wx:for-item="detail" wx:key="key" class="line export-node"><view class="export-node" data-export-text="{{detail.label}}">{{detail.label}}</view><view class="muted export-node" data-export-text="累计区间 {{detail.interval}}">累计区间 {{detail.interval}}</view><view class="formula export-node" data-export-text="{{detail.formula}}">{{detail.formula}}</view></view>
     </view>
-    <view class="card"><view class="muted">六个阶梯合计</view><view class="amount small">{{view.amount}}<text class="unit">元</text></view></view>
-    <billing-table table="{{view.table}}" rules="{{view.rules}}" title="{{historical ? '本记录使用的计费表' : '本次试算使用的计费表'}}" />
-    <block wx:if="{{historical}}"><button class="primary" bindtap="reuse" disabled="{{acting}}">按当前计费表重新试算</button><button class="danger" bindtap="remove" disabled="{{acting}}" loading="{{acting}}">删除这条记录</button></block>
-    <view class="subtitle">历史按保存时的明细和计费表展示。课时费仅供核对，不代表工资已发放。</view>
-  </block>
+    <view class="card export-node"><view class="muted export-node" data-export-text="六个阶梯合计">六个阶梯合计</view><view class="amount small"><text class="export-node" data-export-text="{{view.amount}}">{{view.amount}}</text><text class="unit export-node" data-export-text="元">元</text></view></view>
+    <billing-table id="detail-billing-table" table="{{view.table}}" rules="{{view.rules}}" title="{{historical ? '本记录使用的计费表' : '本次试算使用的计费表'}}" />
+    <view class="subtitle export-node" data-export-text="历史按保存时的明细和计费表展示。课时费仅供核对，不代表工资已发放。">历史按保存时的明细和计费表展示。课时费仅供核对，不代表工资已发放。</view>
+  </view>
+  <block wx:if="{{view && historical && !shared}}"><button class="primary full-width" bindtap="reuse" disabled="{{acting}}">按当前计费表重新试算</button><button class="danger full-width" bindtap="remove" disabled="{{acting}}" loading="{{acting}}">删除这条记录</button></block>
 </view>
+<view wx:if="{{view}}" class="detail-toolbar">
+  <view wx:if="{{imageNotice}}" class="subtitle">{{imageNotice}}</view>
+  <view wx:if="{{albumPermission}}" class="notice warning">保存长图需要相册权限。开启后请再次点击保存。<button class="link" bindtap="albumSettings">打开权限设置</button></view>
+  <view class="actions detail-actions"><button bindtap="saveImage" disabled="{{exporting}}" loading="{{exporting}}">保存长图到相册</button><button class="primary" bindtap="openShare" disabled="{{exporting}}">分享明细</button></view>
+</view>
+<view wx:if="{{sharePanel && view}}" class="share-overlay" bindtap="closeShare" catchtouchmove="stop">
+  <view class="share-sheet" catchtap="stop">
+    <view class="row"><view class="card-title">分享这份明细</view><button class="link" bindtap="closeShare" disabled="{{preparing || exporting}}">关闭</button></view>
+    <button class="full-width" bindtap="shareLongImage" disabled="{{exporting || preparing}}" loading="{{exporting}}">分享长图</button>
+    <button wx:if="{{shareToken}}" class="primary full-width" open-type="share" disabled="{{preparing || exporting}}">发送小程序给微信好友</button>
+    <button wx:else class="primary full-width" bindtap="prepareShare" disabled="{{preparing || exporting}}" loading="{{preparing}}">{{preparing ? '正在准备分享…' : '生成小程序分享'}}</button>
+    <view class="subtitle">{{shared ? '接收者只能查看这份明细。' : '小程序分享会将这份明细和完整计费表保存为只读快照，收到链接的人可以查看及转发。不会新增历史记录。'}}</view>
+    <button wx:if="{{shareToken && !shared}}" class="link revoke-share" bindtap="revokeShare" disabled="{{preparing || exporting}}">停止此链接分享</button>
+  </view>
+</view>
+<canvas type="2d" id="detail-canvas" class="export-canvas" style="width: {{exportCanvasWidth || 1}}px; height: {{exportCanvasHeight || 1}}px" aria-hidden="true"></canvas>

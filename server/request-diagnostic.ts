@@ -1,7 +1,7 @@
 // Fixed marker distinguishes this deployed handler from older generic errors.
 const revision = 'wechat-request-v2'
 const actions = new Set(['identity', 'getConfig', 'saveConfig', 'saveRecord', 'saveStatus',
-  'configStatus', 'getRecord', 'listRecords', 'deleteRecord'])
+  'configStatus', 'getRecord', 'listRecords', 'deleteRecord', 'createShare', 'getShare', 'revokeShare'])
 
 function kind(value: unknown): string {
   return value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value

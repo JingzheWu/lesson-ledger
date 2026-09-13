@@ -1,4 +1,5 @@
 export * from './session'
 export * from './presentation'
+export * from './detail-image'
 export * from '../core/domain'
 export * from '../core/contracts'
