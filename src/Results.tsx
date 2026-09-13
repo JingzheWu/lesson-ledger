@@ -1,6 +1,7 @@
 import { Check, ChevronDown, Clock3, FileText, Layers3, ReceiptText, ShieldCheck, Table2 } from 'lucide-react'
 import { CLASS_NAMES, decimal, GRADES, GROUPS, hours, lessons, money, TIERS } from './domain'
 import type { Result } from './domain'
+import { BILLING_EXPLANATION } from '../packages/application/billing-copy'
 
 export function monthLabel(month: string): string { const [year, m] = month.split('-'); return `${year} 年 ${Number(m)} 月` }
 export function timeLabel(time: string): string { return new Date(time).toLocaleString('zh-CN', { hour12: false }) }
@@ -38,7 +39,7 @@ export function Settlement({ result, stale }: { result: Result; stale: boolean }
     <section className="card rate-card" aria-labelledby="rates-heading" data-testid="snapshot-rates">
       <div className="section-heading"><div className="title-with-icon"><span className="icon-box"><Table2 size={20} /></span><div><h2 id="rates-heading">{stale ? '上次计算 · 完整计费表' : '本次计费表'}</h2><p>元／小时，一对一基准 · 本次计算使用的完整价格</p></div></div><span className="subtle-badge">价格快照</span></div>
       <div className="table-scroll" role="region" aria-label="本次完整计费表" tabIndex={0}><table className="rate-table"><thead><tr><th>累计授课小时</th>{GROUPS.map(g => <th key={g.name}>{g.name}</th>)}</tr></thead><tbody>{result.config.rates.map((row, i) => <tr key={i}><th>{TIERS[i]}</th>{row.map((rate, j) => <td key={j} data-testid={`snapshot-price-${i}-${j}`}>{money(rate)}</td>)}</tr>)}</tbody></table></div>
-      <div className="snapshot-notes"><p><strong>班型与时长</strong>一对一 ×1.0 / 一对二 ×1.2 / 一对三 ×1.3；每节 2 小时，多人班不按人数累计工时。</p><p><strong>填充顺序</strong>一年级 → 二年级 → 三年级 → 四年级 → 五年级 → 六年级 → 初一 → 初二 → 初三 → 高一 → 高二 → 高三；同年级按一对一 → 一对二 → 一对三。</p><p><strong>舍入口径</strong>基础单价乘系数不提前舍入；每条最终明细十进制四舍五入到分，阶梯小计与总额相加已舍入金额。</p><div className="snapshot-meta"><span>配置版本：{result.config.configRevision}</span><span>配置时间：{timeLabel(result.config.updatedAt)}</span><span>计算时间：{timeLabel(result.calculatedAt)}</span><span>规则版本：{result.config.ruleVersion}</span></div></div>
+      <div className="snapshot-notes"><p><strong>班型与时长</strong>一对一 ×1.0 / 一对二 ×1.2 / 一对三 ×1.3；每节 2 小时，多人班不按人数累计工时。</p><p><strong>课时计入顺序</strong>{BILLING_EXPLANATION.order}</p><p><strong>全月课时一起累计</strong>{BILLING_EXPLANATION.accumulation}</p><p><strong>跨阶梯示例</strong>{BILLING_EXPLANATION.example}</p><p><strong>舍入口径</strong>基础单价乘系数不提前舍入；每条最终明细十进制四舍五入到分，阶梯小计与总额相加已舍入金额。</p><div className="snapshot-meta"><span>配置版本：{result.config.configRevision}</span><span>配置时间：{timeLabel(result.config.updatedAt)}</span><span>计算时间：{timeLabel(result.calculatedAt)}</span><span>规则版本：{result.config.ruleVersion}</span></div></div>
     </section>
   </div>
 }

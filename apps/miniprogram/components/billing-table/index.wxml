@@ -1,5 +1,14 @@
 <view class="table">
-  <view class="heading export-node" data-export-text="{{title}}">{{title}}</view><view class="hint export-node" data-export-text="一对一基础单价 · 元 / 小时">一对一基础单价 · 元 / 小时</view>
+  <view class="heading-row"><view class="heading export-node" data-export-text="{{title}}">{{title}}</view><slot name="heading-action" /></view><view class="hint export-node" data-export-text="一对一基础单价 · 元 / 小时">一对一基础单价 · 元 / 小时</view>
   <view wx:for="{{table}}" wx:key="id" class="tier export-node"><view class="tier-name export-node" data-export-text="{{item.name}}">{{item.name}}</view><view class="grid"><view wx:for="{{item.prices}}" wx:for-item="price" wx:key="id" class="cell"><view class="hint export-node" data-export-text="{{price.name}}">{{price.name}}</view><view class="price export-node" data-export-text="{{price.value}}">{{price.value}}</view></view></view></view>
-  <view class="rules export-node"><view class="export-node" data-export-text="每节固定 {{rules.hoursPerLesson}} 小时；班型系数仅影响费用，不改变阶梯工时。">每节固定 {{rules.hoursPerLesson}} 小时；班型系数仅影响费用，不改变阶梯工时。</view><view wx:for="{{rules.classes}}" wx:key="id" class="export-node" data-export-text="{{item.name}}：{{item.numerator / item.denominator}}">{{item.name}}：{{item.numerator / item.denominator}}</view><view class="export-node" data-export-text="{{rules.sorting}}">{{rules.sorting}}</view><view class="export-node" data-export-text="{{rules.rounding}}">{{rules.rounding}}</view></view>
+  <view class="rules export-node">
+    <view class="export-node" data-export-text="每节固定 {{rules.hoursPerLesson}} 小时；班型系数仅影响费用，不改变阶梯工时。">每节固定 {{rules.hoursPerLesson}} 小时；班型系数仅影响费用，不改变阶梯工时。</view>
+    <view class="rule-note">
+      <view class="rule-note-title export-node" data-export-text="班型计费系数">班型计费系数</view>
+      <view class="export-node" data-export-text="对应年级和阶梯的基础单价乘以下列系数，得到该班型的每小时单价。">对应年级和阶梯的基础单价乘以下列系数，得到该班型的每小时单价。</view>
+      <view wx:for="{{rules.classes}}" wx:key="id" class="export-node" data-export-text="{{item.name}}：×{{item.numerator === item.denominator ? '1.0' : item.numerator / item.denominator}}">{{item.name}}：×{{item.numerator === item.denominator ? '1.0' : item.numerator / item.denominator}}</view>
+    </view>
+    <view wx:for="{{ruleNotes}}" wx:key="id" class="rule-note"><view class="rule-note-title export-node" data-export-text="{{item.title}}">{{item.title}}</view><view class="export-node" data-export-text="{{item.text}}">{{item.text}}</view></view>
+    <view class="export-node" data-export-text="{{rules.rounding}}">{{rules.rounding}}</view>
+  </view>
 </view>

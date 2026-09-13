@@ -1,5 +1,5 @@
 <view class="detail-nav" style="padding-top: {{navTop}}px; padding-right: {{navRight}}px; height: {{navTotal}}px">
-  <button class="link nav-button" style="height: {{navHeight}}px" bindtap="navigateBack" aria-label="{{homeNavigation ? '返回首页' : '返回上一页'}}"><view class="icon {{homeNavigation ? 'icon-home' : 'icon-chevron icon-back'}}" aria-hidden="true"></view></button>
+  <button class="link nav-button" style="height: {{navHeight}}px" bindtap="navigateBack" aria-label="{{homeNavigation ? '返回首页' : '返回上一页'}}"><image wx:if="{{homeNavigation}}" class="icon" src="/assets/icons/home-navigation.png" mode="aspectFit" aria-hidden="true" /><image wx:else class="icon" src="/assets/icons/left.png" mode="aspectFit" aria-hidden="true" /></button>
   <view class="nav-title">计算明细</view>
 </view>
 <view style="height: {{navTotal}}px"></view>

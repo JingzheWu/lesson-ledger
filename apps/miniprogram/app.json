@@ -3,7 +3,11 @@
   "window": { "navigationBarTitleText": "课时小账", "navigationBarBackgroundColor": "#f5f7f4", "navigationBarTextStyle": "black", "backgroundColor": "#f5f7f4", "backgroundTextStyle": "dark" },
   "tabBar": {
     "color": "#70786f", "selectedColor": "#24754c", "backgroundColor": "#ffffff", "borderStyle": "white",
-    "list": [{ "pagePath": "pages/calculate/index", "text": "计算" }, { "pagePath": "pages/history/index", "text": "记录" }, { "pagePath": "pages/settings/index", "text": "设置" }]
+    "list": [
+      { "pagePath": "pages/calculate/index", "text": "计算", "iconPath": "assets/icons/home.png", "selectedIconPath": "assets/icons/home-filled.png" },
+      { "pagePath": "pages/history/index", "text": "记录", "iconPath": "assets/icons/list.png", "selectedIconPath": "assets/icons/list-filled.png" },
+      { "pagePath": "pages/settings/index", "text": "设置", "iconPath": "assets/icons/settings.png", "selectedIconPath": "assets/icons/settings-filled.png" }
+    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json",

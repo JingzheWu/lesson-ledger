@@ -1,5 +1,6 @@
 .table { margin-top: 24px; color: #24332a; font-size: 16px; overflow-wrap: anywhere; }
-.heading { font-size: 21px; font-weight: 600; }
+.heading-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.heading { flex: 1; min-width: 0; font-size: 21px; font-weight: 600; }
 .hint { color: #728075; font-size: 14px; margin-top: 4px; }
 .tier { background: #fff; padding: 18px; border: 1px solid #e4eae2; border-radius: 16px; margin-top: 12px; }
 .tier-name { font-weight: 600; }
@@ -8,4 +9,6 @@
 .price { font-size: 20px; word-break: break-all; }
 .rules { margin-top: 16px; padding: 16px; background: #eaf1e8; border-radius: 12px; color: #516957; font-size: 14px; }
 .rules view { margin-bottom: 8px; }
+.rules .rule-note { margin-top: 16px; }
+.rule-note-title { font-weight: 600; }
 .export-node { word-break: break-all; }

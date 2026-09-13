@@ -20,6 +20,8 @@ export function rulesSnapshot(): Rules {
     groups: GROUPS.map((g, id) => ({ id, name: g.name })),
     classes: ([1, 2, 3] as const).map(id => ({ id, name: CLASS_NAMES[id], numerator: MULTIPLIERS[id], denominator: 10 })),
     tiers: TIERS.map((name, id) => ({ id, name, fromHundredths: id * 3000, toHundredths: id === 5 ? null : (id + 1) * 3000 })),
+    // Persisted snapshot text participates in compatibility checks. User-facing
+    // explanations live in application/billing-copy.ts; keep this value stable.
     sorting: '实际年级从低到高；同年级一对一 → 一对二 → 一对三；全月共享阶梯',
     rounding: '相同年级、班型先合并；逐条最终阶梯明细四舍五入到分，再相加；中间单价不舍入',
   }

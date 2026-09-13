@@ -2,9 +2,6 @@
 .detail-nav { position: fixed; z-index: 10; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 8px; padding-left: 12px; padding-bottom: 10px; background: #f5f7f4; }
 button.nav-button { width: 44px; min-height: 32px; padding: 0; }
 .nav-title { font-size: 16px; font-weight: 600; white-space: nowrap; }
-.icon-back { transform: rotate(180deg); }
-.icon-home::before { content: ''; position: absolute; width: 14px; height: 14px; top: 4px; left: 5px; border-top: 2px solid currentColor; border-left: 2px solid currentColor; transform: rotate(45deg); }
-.icon-home::after { content: ''; position: absolute; width: 14px; height: 12px; top: 10px; left: 5px; border: 2px solid currentColor; border-top: 0; border-radius: 0 0 2px 2px; }
 .detail-actions button { font-size: 14px; }
 .detail-toolbar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10; padding: 0 16px calc(12px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid #e1e8de; }
 .export-node { word-break: break-all; }

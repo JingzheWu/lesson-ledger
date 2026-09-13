@@ -1,4 +1,5 @@
 .section-head { margin-top: 22px; }
+.lesson-count { display: inline-block; margin-left: 10px; }
 .entry-header { flex-wrap: nowrap; }
 .entry-header .card-title { flex: 1; }
 .month-picker { min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 23px; }

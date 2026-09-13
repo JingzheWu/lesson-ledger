@@ -1,4 +1,8 @@
 .price-cell { margin-bottom: 10px; }
+button.edit-rates-button { width: 44px; height: 44px; padding: 10px; }
+button.edit-rates-button .icon { margin: 0; }
+.tier-arrow { transform: rotate(0deg); transition: transform 180ms ease; }
+.tier-arrow-expanded { transform: rotate(180deg); }
 .price-cell .field-label { min-height: 3.1em; line-height: 1.55; }
 .edit-guide-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
 .edit-guide-row { display: flex; align-items: flex-start; gap: 12px; margin-top: 8px; }

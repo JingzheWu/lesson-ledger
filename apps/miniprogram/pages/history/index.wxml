@@ -1,7 +1,7 @@
 <view class="page">
   <view class="eyebrow">SAVED RECORDS</view><view class="title">留一份，心里有底</view><view class="subtitle">只显示你主动保存成功的记录</view>
-  <view class="card row"><picker mode="date" fields="month" value="{{month}}" start="1900-01" end="9999-12" bindchange="changeMonth"><button class="link">{{month || '全部月份'}}<view class="icon icon-chevron icon-down" aria-hidden="true"></view></button></picker><button class="link" bindtap="all">显示全部</button></view>
-  <view class="notice warning" wx:if="{{!ready}}">暂时无法读取个人记录，请确认身份后重试。<button bindtap="sync">重新同步</button></view>
+  <view class="card row"><picker mode="date" fields="month" value="{{month}}" start="1900-01" end="9999-12" bindchange="changeMonth"><button class="link">{{month || '全部月份'}}<image class="icon" src="/assets/icons/down.png" mode="aspectFit" aria-hidden="true" /></button></picker><button class="link" bindtap="all">显示全部</button></view>
+  <view class="notice warning" wx:if="{{!ready}}">暂时无法读取个人记录，请确认身份后重试。<button class="link" bindtap="sync">重新同步</button></view>
   <view class="notice warning" wx:if="{{error}}">{{error}}<button bindtap="retry">重试加载</button></view>
   <view class="card empty" wx:if="{{ready && !loading && !error && !records.length}}"><view class="empty-icon">▤</view><view>暂无已保存记录</view><view class="subtitle">核对计算结果后，点击“保存到云端”。</view><button class="primary" bindtap="calculate">前往计算</button></view>
   <view wx:for="{{records}}" wx:key="id" class="card">
@@ -9,7 +9,7 @@
     <block wx:if="{{item.compatible}}"><view class="amount small">{{item.amount}}<text class="unit">元</text></view><view class="muted">{{item.hours}} 小时 · {{item.totalLessons}} 节</view></block>
     <view wx:else class="notice warning">此记录需要更新小程序后查看</view>
     <view class="line muted">保存时间 {{item.savedTime}}</view><view class="muted">计费表时间 {{item.configTime}}</view>
-    <button bindtap="open" data-id="{{item.id}}">查看记录<view class="icon icon-chevron" aria-hidden="true"></view></button>
+    <button bindtap="open" data-id="{{item.id}}">查看记录<image class="icon" src="/assets/icons/right.png" mode="aspectFit" aria-hidden="true" /></button>
   </view>
   <view wx:if="{{loading}}" class="empty muted">正在读取记录…</view>
   <button wx:if="{{hasMore && !loading}}" bindtap="more">加载更多</button>

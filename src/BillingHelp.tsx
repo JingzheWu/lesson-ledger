@@ -2,6 +2,7 @@ import { CircleHelp, SlidersHorizontal, X } from 'lucide-react'
 import { GROUPS, money, TIERS } from './domain'
 import type { Config } from './domain'
 import { useModal } from './useModal'
+import { BILLING_EXPLANATION } from '../packages/application/billing-copy'
 
 interface Props {
   config: Config
@@ -46,11 +47,11 @@ export default function BillingHelp({ config, onClose, onEditRates, returnFocus 
           </li>
           <li>
             <span className="help-step-number">02</span>
-            <div><h3>低年级先填，同年级按班型排序</h3><p>按一年级至高三、实际年级从低到高分配。同年级按「一对一 → 一对二 → 一对三」依次填充；录入顺序不影响结果。</p></div>
+            <div><h3>课时按什么顺序计入阶梯</h3><p>{BILLING_EXPLANATION.order}</p></div>
           </li>
           <li>
             <span className="help-step-number">03</span>
-            <div><h3>全月共享阶梯，超出部分进入下一档</h3><p>前 150 小时每 30 小时一档，超过 150 小时使用第六档，每月从零累计。同一项授课可以跨多个阶梯。</p><p className="help-example">例如，31 小时中有 30 小时使用第一档价格，剩余 1 小时使用第二档价格。</p></div>
+            <div><h3>全月课时一起累计</h3><p>{BILLING_EXPLANATION.accumulation}</p><p className="help-example">{BILLING_EXPLANATION.example}</p></div>
           </li>
           <li>
             <span className="help-step-number">04</span>

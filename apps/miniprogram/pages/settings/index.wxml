@@ -3,9 +3,10 @@
   <view class="notice sync-notice"><view class="notice-row"><view class="notice-message">{{notice}}</view><button class="link sync-action" bindtap="sync" disabled="{{identifying || busy}}">重新同步</button></view></view>
   <view wx:if="{{available}}" class="subtitle">配置时间 {{configTime}}</view>
   <block wx:if="{{!editing}}">
-    <button class="primary" bindtap="edit" disabled="{{!available || identifying}}">编辑计费表</button>
     <view wx:if="{{!available}}" class="notice warning">当前展示内置默认价格，仅供临时试算。同步个人计费表后可编辑。</view>
-    <billing-table table="{{table}}" rules="{{rules}}" title="{{available ? '当前个人计费表' : '内置默认计费表'}}" />
+    <billing-table table="{{table}}" rules="{{rules}}" title="{{available ? '当前个人计费表' : '内置默认计费表'}}">
+      <button wx:if="{{available}}" slot="heading-action" class="link edit-rates-button" bindtap="edit" disabled="{{identifying}}" aria-label="编辑计费表"><image class="icon" src="/assets/icons/edit.png" mode="aspectFit" aria-hidden="true" /></button>
+    </billing-table>
   </block>
   <block wx:else>
     <view class="notice edit-guide">
@@ -15,7 +16,7 @@
       <view class="edit-guide-row"><view class="edit-guide-label">生效时间</view><view class="edit-guide-value">保存成功后生效</view></view>
     </view>
     <view wx:for="{{draftTiers}}" wx:key="id" class="card">
-      <button class="link" data-id="{{item.id}}" bindtap="toggle">{{item.name}} {{expanded[item.id] ? '收起 −' : '展开 ＋'}}</button>
+      <button class="link" data-id="{{item.id}}" bindtap="toggle" aria-expanded="{{expanded[item.id] ? 'true' : 'false'}}">{{item.name}} {{expanded[item.id] ? '收起' : '展开'}}<image class="icon tier-arrow {{expanded[item.id] ? 'tier-arrow-expanded' : ''}}" src="/assets/icons/down.png" mode="aspectFit" aria-hidden="true" /></button>
       <view wx:if="{{expanded[item.id]}}" class="price-grid">
         <view wx:for="{{item.prices}}" wx:for-item="price" wx:key="group" class="price-cell">
           <label class="field-label" for="price-{{item.id}}-{{price.group}}">{{price.name}}</label>
