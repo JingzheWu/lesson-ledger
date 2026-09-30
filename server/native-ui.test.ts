@@ -33,7 +33,14 @@ async function fixture() {
       run: (fn: () => unknown) => { const p = Promise.resolve().then(fn).catch(e => errors.push(e)); tasks.push(p); return p } }
     runInNewContext(readFileSync(resolve('apps/miniprogram/pages', name, 'index.js'), 'utf8'), {
       require: (name: string) => name.endsWith('runtime') ? runtime : name.endsWith('detail-image') ? imageTools : ui, getApp: () => app, getCurrentPages: () => [{}, {}], wx,
-      Page: (definition: PageHarness) => { page = definition; page.setData = (value: object) => Object.assign(page.data, value) },
+      Page: (definition: PageHarness) => { page = definition; page.setData = (value: object) => {
+        for (const [path, entry] of Object.entries(value)) {
+          const keys = path.replace(/\[(\d+)\]/g, '.$1').split('.')
+          let target = page.data
+          for (const key of keys.slice(0, -1)) target = target[key]
+          target[keys.at(-1)!] = entry
+        }
+      } },
     })
     return page
   }
@@ -179,6 +186,71 @@ it('原生设置页展示24个草稿输入，保存成功标记已有试算待�
   expect(f.s.active!.config.rates[0][0]).toBe(1500)
   page.save(); await f.flush(); expect(page.data.editing).toBe(false); expect(f.s.active!.config.rates[0][0]).toBe(2000)
   expect(f.s.resultState).toBe('stale'); expect(f.errors).toEqual([]); page.onUnload()
+})
+it('计费草稿连续输入、删除和小数编辑只更新单元格，保留原生焦点与列表身份', async () => {
+  const f = await fixture(), page = f.load('settings'); page.onLoad(); page.edit(); await f.flush()
+  const template = readFileSync(resolve('apps/miniprogram/pages/settings/index.wxml'), 'utf8')
+  expect(template).toContain('bindfocus="focus"')
+  expect(template).toContain('bindblur="blur"')
+  const event = (tier: number, group: number, value = '') => ({ currentTarget: { dataset: { tier, group } }, detail: { value } })
+  const tiers = page.data.draftTiers, firstTier = tiers[0], prices = firstTier.prices, cell = prices[0]
+  page.focus(event(0, 0))
+  const updates = vi.spyOn(page, 'setData')
+  for (const value of ['1', '12', '123', '12', '1', '', '0', '0.', '0.5', '0.50']) {
+    updates.mockClear()
+    page.input(event(0, 0, value))
+    expect(f.s.draft!.texts[0][0]).toBe(value)
+    expect(page.data.draftTiers[0].prices[0]).toMatchObject({ text: value, error: runtime.parsePrice(value).error || '' })
+    expect(page.data.focusPrice).toBe('0-0')
+    expect(page.data.draftTiers).toBe(tiers)
+    expect(page.data.draftTiers[0]).toBe(firstTier)
+    expect(page.data.draftTiers[0].prices).toBe(prices)
+    expect(page.data.draftTiers[0].prices[0]).toBe(cell)
+    expect(updates).toHaveBeenCalledOnce()
+    expect(Object.keys(updates.mock.calls[0][0]).every(key => /^draftTiers\[0\]\.prices\[0\]\.(text|error)$/.test(key))).toBe(true)
+  }
+  updates.mockClear(); page.render(); expect(updates).not.toHaveBeenCalled()
+  page.focus(event(0, 1)); page.blur(event(0, 0)); expect(page.data.focusPrice).toBe('0-1')
+  page.input(event(0, 1, '28.25')); expect(page.data.draftTiers[0].prices[1].text).toBe('28.25')
+  page.blur(event(0, 1)); expect(page.data.focusPrice).toBe('')
+  expect(f.wx.hideKeyboard).not.toHaveBeenCalled()
+  expect(f.errors).toEqual([]); page.onUnload()
+})
+it('计费校验失败仍展开并聚焦错误项，修正后保存，重新编辑不残留焦点', async () => {
+  const f = await fixture(), page = f.load('settings'); page.onLoad(); page.edit(); await f.flush()
+  const event = (value = '') => ({ currentTarget: { dataset: { tier: 2, group: 1 } }, detail: { value } })
+  page.input(event()); page.save(); await f.flush()
+  expect(f.errors).toHaveLength(1)
+  expect(page.data.expanded[2]).toBe(true)
+  expect(page.data.focusPrice).toBe('2-1')
+  page.focus(event()); page.input(event('45.25'))
+  expect(page.data.focusPrice).toBe('2-1')
+  expect(page.data.draftTiers[2].prices[1].error).toBe('')
+  page.save(); await f.flush()
+  expect(f.s.active!.config.rates[2][1]).toBe(4525)
+  expect(page.data.editing).toBe(false); expect(page.data.focusPrice).toBe('')
+  page.edit(); await f.flush()
+  expect(page.data.draftTiers[2].prices[1].text).toBe('45.25')
+  expect(page.data.focusPrice).toBe(''); page.onUnload()
+})
+it('计费单元格补丁兼容恢复默认、加载最新对照、冻结和取消重开', async () => {
+  const f = await fixture(), page = f.load('settings'); page.onLoad(); page.edit(); await f.flush()
+  const event = { currentTarget: { dataset: { tier: 0, group: 0 } }, detail: { value: '99' } }
+  page.input(event); page.reset(); await f.flush()
+  expect(page.data.draftTiers[0].prices[0].text).toBe('15.00')
+  page.input(event); page.latest(); await f.flush()
+  expect(page.data.draftTiers[0].prices[0]).toMatchObject({ text: '15.00', comparison: '99' })
+  for (const state of ['busy', 'unknown', 'conflict'] as const) {
+    f.s.draft![state] = true; f.s.emit(); page.input(event)
+    expect(page.data[state]).toBe(true)
+    expect(page.data.draftTiers[0].prices[0].text).toBe('15.00')
+    f.s.draft![state] = false; f.s.emit()
+  }
+  page.focus(event); page.cancel(); await f.flush()
+  expect(page.data.draftTiers).toEqual([]); expect(page.data.focusPrice).toBe('')
+  page.edit(); await f.flush()
+  expect(page.data.draftTiers[0].prices[0]).toMatchObject({ text: '15.00', comparison: null })
+  expect(f.errors).toEqual([]); page.onUnload()
 })
 it('原生历史与详情：读取快照、显式复用、不自动保存、确认删除', async () => {
   const f = await fixture(); f.s.addRow(0, 1); f.s.updateRow('0-1', 'hours', '20'); f.s.calculate(); const saved = await f.s.save()

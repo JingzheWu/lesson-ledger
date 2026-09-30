@@ -20,7 +20,7 @@
       <view wx:if="{{expanded[item.id]}}" class="price-grid">
         <view wx:for="{{item.prices}}" wx:for-item="price" wx:key="group" class="price-cell">
           <label class="field-label" for="price-{{item.id}}-{{price.group}}">{{price.name}}</label>
-          <input id="price-{{item.id}}-{{price.group}}" aria-label="{{price.name}}基础单价，元每小时" type="digit" value="{{price.text}}" maxlength="24" data-tier="{{item.id}}" data-group="{{price.group}}" bindinput="input" disabled="{{busy || unknown || conflict}}" focus="{{focusPrice === item.id + '-' + price.group}}" cursor-spacing="32" />
+          <input id="price-{{item.id}}-{{price.group}}" aria-label="{{price.name}}基础单价，元每小时" type="digit" value="{{price.text}}" maxlength="24" data-tier="{{item.id}}" data-group="{{price.group}}" bindinput="input" bindfocus="focus" bindblur="blur" disabled="{{busy || unknown || conflict}}" focus="{{focusPrice === item.id + '-' + price.group}}" cursor-spacing="32" />
           <view wx:if="{{price.error}}" class="error">{{price.error}}</view>
           <view wx:if="{{price.comparison !== null}}" class="muted">原草稿：{{price.comparison || '未填写'}} 元</view>
         </view>
