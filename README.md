@@ -2,6 +2,18 @@
 
 项目包含 React 网页与 原生微信小程序，两端及云函数共用同一份精确计算规则。网页继续独立使用；微信小程序提供个人云端计费表、手动保存、历史快照、复用与删除。
 
+## 开发与构建工具
+
+本地开发及构建基线为 Node.js **22.23.4**、pnpm **10.34.8**，适用于网页与微信小程序。请先在实际开发/构建电脑上更新工具，再在仓库根目录检查版本并安装依赖：
+
+```bash
+node --version                 # v22.23.4
+corepack pnpm --version         # 10.34.8，与 package.json 的 packageManager 一致
+corepack pnpm install --frozen-lockfile
+```
+
+`packageManager` 只声明项目使用的 pnpm 版本，不会升级本机 Node.js。若直接使用 `pnpm` 命令，也需确认 `pnpm --version` 为 10.34.8；下文的 `pnpm` 命令均可替换为 `corepack pnpm`。工具升级后应重新执行文末验证，历史验收结果不代表新工具链已完成验证。
+
 ## 微信小程序
 
 ```powershell
@@ -34,11 +46,11 @@ corepack pnpm check:wechat  # 使用本机微信开发者工具编译 WXML / WXS
 
 ## 网页启动
 
-需要 Node.js 22.12+ 与 pnpm 10。
+先按上文准备 Node.js 22.23.4 与 pnpm 10.34.8。
 
 ```bash
 export https_proxy=http://127.0.0.1:7897 http_proxy=http://127.0.0.1:7897 all_proxy=socks5://127.0.0.1:7897
-pnpm install
+corepack pnpm install --frozen-lockfile
 pnpm dev
 ```
 
