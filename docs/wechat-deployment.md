@@ -6,8 +6,8 @@
 
 | 项目 | 本次基线 |
 | --- | --- |
-| 本机开发 Node.js | 22.18.0；构建建议22.12+ |
-| 包管理器 | pnpm 10.14.0 |
+| 本机开发 / 构建 Node.js | 22.23.4 |
+| 包管理器 | pnpm 10.34.8（package.json 的 packageManager） |
 | 小程序基础库 | 3.7.12（project.config.json） |
 | 小程序业务包输出 | ES2017，不依赖 BigInt |
 | 云函数运行时 | Nodejs18.15（cloudbaserc.example.json）；函数入口 index.main |
@@ -19,7 +19,11 @@
 
 ## 本地准备
 
+先在实际开发/构建电脑上更新 Node.js 和 pnpm，再执行以下命令。`packageManager` 不会升级本机 Node.js；直接使用 `pnpm` 时，也应确认其版本为 10.34.8。本次仅更新本地工具链声明与说明，不改变云函数运行时或构建目标。历史验收环境保留在 `docs/acceptance.md`，更新工具后须重新执行本文的可重复验证。
+
 ```powershell
+node --version                  # v22.23.4
+corepack pnpm --version          # 10.34.8
 $env:HTTP_PROXY="http://127.0.0.1:7897"
 $env:HTTPS_PROXY="http://127.0.0.1:7897"
 corepack pnpm install --frozen-lockfile
